@@ -1,12 +1,11 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
+import Logo from './Logo.jsx';
 
 const NavigationTab = () => {
   return (
     <div className="bg-[#21262B] w-58 min-h-screen py-8 pr-3 pl-8 text-white flex flex-col rounded-2xl rounded-tr-none rounded-br-none ">
-      <header className="mb-6 font-bold text-[#D9A441]">
-        <NavLink to="/">Pocketwise</NavLink>
-      </header>
+      <Logo/>
 
       <main className="font-semibold">
         <NavLink
