@@ -6,7 +6,7 @@ const Transactions = () => {
   const { transactions } = useContext(TransactionContext);
   
   const showTransaction = () => {
-    if (transactions.length > 0) {
+    if (transactions.length> 0) {
        return( transactions.map((item, idx) => {
           return (
             <tr key={item.id} className="hover:bg-[#eadecc] transition-colors">

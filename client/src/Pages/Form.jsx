@@ -1,11 +1,4 @@
-// Possible correction to be made
-{
-  /*
-  1. Your date comment is correct! toISOString() uses UTC, which can give you the wrong local date around midnight. We'll fix that before moving on.
-  2. Your category options include both income and expense categories. Your current code allows someone to select an income category while the transaction type is set to expense. Later, we can make the category options respond to the selected transaction type.
-  */
-}
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useRef } from 'react'
 import { TransactionContext } from '../context/TransactionContext';
 
 const Form = () => {
@@ -17,21 +10,38 @@ const Form = () => {
     date: new Date().toISOString().split("T")[0],
     transaction:'expense',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { transactions, setTransactions } = useContext(TransactionContext);
+  const { setTransactions } = useContext(TransactionContext);
+  const submittingRef = useRef(false);
 
   const setInput = (e) => {
     setExpenseInput(prev => ({...prev, [e.target.name]:e.target.value}))
   }
+  
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (submittingRef.current === true) return;
+    submittingRef.current = true;
+    setIsSubmitting(true);
     const result = expenseInput;
 
-    const newTransaction={id: Date.now(), title:result.expense_name, amount:Number(result.amount),date:result.date, category:result.expense_category,transaction:result.transaction}
+    const newTransaction = {
+      id: Date.now(), title: result.expense_name, amount: Number(result.amount), date: result.date, category: result.expense_category, transaction: result.transaction
+    }
 
-    setTransactions(prev=>{return([...prev,newTransaction])})
-
+    setTransactions(prev => { return ([...prev, newTransaction]) })
     
+    setExpenseInput({ expense_name: "",
+    amount: "",
+    expense_category: "",
+    // remember to correct the UTC date stuff ohh
+    date: new Date().toISOString().split("T")[0],
+    transaction:'expense',
+  })
+
+    setIsSubmitting(false)
+    submittingRef.current = false;
   }
 
   return (
@@ -176,7 +186,8 @@ const Form = () => {
 
         <button
           type="submit"
-          className="mt-9.5 bg-[#D9A441] text-[#21262B]  mb-2 w-full rounded-lg py-2 font-medium hover:bg-[#D9A441]/85  hover:ease-in-out duration-500 cursor-pointer"
+          disabled={isSubmitting}
+          className={`mt-9.5 bg-[#D9A441] text-[#21262B]  mb-2 w-full rounded-lg py-2 font-medium hover:bg-[#D9A441]/85  hover:ease-in-out duration-500 cursor-pointer disabled:cursor-not-allowed`}
         >
           Save Transaction
         </button>
@@ -186,3 +197,11 @@ const Form = () => {
 }
 
 export default Form
+
+// Possible correction to be made
+{
+  /*
+  1. Your date comment is correct! toISOString() uses UTC, which can give you the wrong local date around midnight. We'll fix that before moving on.
+  2. Your category options include both income and expense categories. Your current code allows someone to select an income category while the transaction type is set to expense. Later, we can make the category options respond to the selected transaction type.
+  */
+}
