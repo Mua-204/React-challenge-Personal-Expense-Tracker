@@ -16,6 +16,12 @@ const Transactions = () => {
               <td className="p-3 font-semibold">
                 ₦{item.amount.toLocaleString()}
               </td>
+              <td className={`p-3 font-semibold flex`}>
+                {item.transaction}
+                <div
+                  className={`${item.transaction === "income"?"bg-[#3265f1]":"bg-[#d40629]"} w-1.5 items-center h-5 ml-auto`}
+                ></div>
+              </td>
             </tr>
           );
        })
@@ -24,7 +30,7 @@ const Transactions = () => {
     else {
       return (
         <tr className="hover:bg-[#eadecc] transition-colors ml-1">
-          <td className="p-3 text-center text-gray-500 italic" colSpan={4}>
+          <td className="p-3 text-center text-gray-500 italic" colSpan={5}>
             No transactions yet
           </td>
         </tr>
@@ -35,7 +41,7 @@ const Transactions = () => {
 
   return (
     <>
-      <div className="overflow-x-auto rounded-lg border border-[#D9A441]">
+      <div className="overflow-auto h-full rounded-lg border border-[#D9A441]">
         <table className="min-w-full divide-y divide-[#D9A441] bg-[#F1EAD9] text-left text-sm text-gray-800">
           <thead className="bg-[#D9A441] text-white font-medium">
             <tr>
@@ -43,6 +49,7 @@ const Transactions = () => {
               <th className="p-3">Category</th>
               <th className="p-3">Date</th>
               <th className="p-3">Amount</th>
+              <th className="p-3">Transaction type</th>
             </tr>
           </thead>
 
