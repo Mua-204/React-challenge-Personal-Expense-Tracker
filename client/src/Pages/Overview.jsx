@@ -24,7 +24,26 @@ const CustomRechartTooltip = ({ active, payload, label }) => {
 
 const Overview = () => {
   const { transactions } = useContext(TransactionContext);
-  const recentTransactions = transactions.slice(-5).reverse();
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  const daysSinceMonday = (dayOfWeek + 6) % 7;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - daysSinceMonday);
+  const weekDays = [];
+
+  
+  // forLoop
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + i);
+    const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    const dayLabel = date.toLocaleDateString("en-US", { weekday: "short" });
+    weekDays.push({ day: dayLabel, dateKey, total: 0 });
+    // console.log(dateKey);
+    
+  };
+  // console.log(today, " ", dayOfWeek, " ", monday, " ", weekDays);
+  
   const greeting = () => {
   const time = new Date().getHours();
     if (time <12) {
@@ -37,6 +56,8 @@ const Overview = () => {
       return 'evening'
     }
   }
+  // recent Transaction
+  const recentTransactions = transactions.slice(-5).reverse();
   const displayRecentTransactions = () => {
     return recentTransactions.map((expense, idx) => (
       <li
