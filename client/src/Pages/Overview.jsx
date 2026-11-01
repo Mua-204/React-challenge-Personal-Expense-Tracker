@@ -1,11 +1,9 @@
-import React,{useState, useContext} from 'react'
+import React,{useContext} from 'react'
 import SummaryCard from '../component/SummaryCard.jsx';
-import { Expenses, weeklyChartData } from "../component/Array.js";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { TransactionContext } from '../context/TransactionContext.jsx';
 import { Link } from 'react-router-dom';
 import { formatCurrency } from '../component/utils.js';
-// import { Cursor } from 'recharts/types/component/Cursor.js';
 
 const CustomRechartTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -13,8 +11,7 @@ const CustomRechartTooltip = ({ active, payload, label }) => {
       <div className="p-2 bg-[#F1EAD9] rounded-md">
         <p className="font-medium text-lg text-[#21262B]">{label}</p>
         <p className="text-[#D9A441]">
-          <span>total: &#8358;</span>
-          <span>{payload[0].value}</span>
+          <span>{formatCurrency(payload[0].value)}</span>
         </p>
       </div>
     );
@@ -38,11 +35,11 @@ const Overview = () => {
     date.setDate(monday.getDate() + i);
     const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
     const dayLabel = date.toLocaleDateString("en-US", { weekday: "short" });
-    weekDays.push({ day: dayLabel, dateKey, total: 0 });
-    // console.log(dateKey);
+
+    const total = transactions.filter((transactionItem) => { return (transactionItem.date === dateKey && transactionItem.transaction === "expense") }).reduce((total, currentTransaction) => (total + currentTransaction.amount), 0);
     
+    weekDays.push({ day: dayLabel, dateKey, total: total });
   };
-  // console.log(today, " ", dayOfWeek, " ", monday, " ", weekDays);
   
   const greeting = () => {
   const time = new Date().getHours();
@@ -65,7 +62,10 @@ const Overview = () => {
         className="flex items-center py-2 border-b border-[#F1EAD9]"
       >
         <p className="text-[#4b2e4d]/80 text-[15px] ">{expense.title}</p>
-        <p className="ml-auto text-[#21262B] text-[15px] font-medium ">
+        <p
+          className={`ml-auto text-[15px] font-medium ${expense.transaction === "expense" ? "text-[#d40629]" : "text-[#05b60e]"}`}
+        >
+          {expense.transaction === "expense" ? "-" : "+"}
           {formatCurrency(expense.amount)}
         </p>
       </li>
@@ -97,6 +97,7 @@ const Overview = () => {
   const expense = expenseCalculation();
   // total balance
   const totalBalance = income - expense;
+
   return (
     <section className="overflow-x-hidden flex flex-col h-full">
       <header className="mb-4">
@@ -129,7 +130,7 @@ const Overview = () => {
           {/* RECHART below */}
           <div className="mt-auto">
             <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={weeklyChartData}>
+              <BarChart data={weekDays} margin={{ top: 20, right: 30, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="day" />
                 <YAxis />
